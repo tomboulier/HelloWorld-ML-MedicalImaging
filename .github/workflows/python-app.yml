@@ -27,6 +27,7 @@ jobs:
     - name: Get data with DVC
       run: |
         pip install dvc
+        pip install 'dvc[gdrive]'
         dvc pull
     - name: Run main script
       run: |
