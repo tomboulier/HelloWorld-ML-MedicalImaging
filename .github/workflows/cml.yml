@@ -1,5 +1,7 @@
-name:test-dvc
-on: [push]
+name: test cml dvc pull data
+
+on: push
+
 jobs:
   run:
     runs-on: [ubuntu-latest]
