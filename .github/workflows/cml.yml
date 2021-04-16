@@ -17,4 +17,4 @@ jobs:
           # pip install -r requirements.txt
 
           # Pull data
-          dvc pull
+          dvc pull -v --run-cache
