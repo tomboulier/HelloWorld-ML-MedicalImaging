@@ -24,6 +24,10 @@ Get data from the original repository:
 wget https://github.com/paras42/Hello_World_Deep_Learning/raw/master/Open_I_abd_vs_CXRs.zip
 unzip Open_I_abd_vs_CXRs.zip
 ```
+Install required dependencies:
+```
+pip install -r requirements.txt
+```
 
 Run the main script:
 ```
