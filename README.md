@@ -21,8 +21,8 @@ cd HelloWorld-ML-MedicalImaging
 
 Get data from the original repository:
 ```
-wget https://github.com/paras42/Hello_World_Deep_Learning/raw/master/Open_I_abd_vs_CXRs.zip
-unzip Open_I_abd_vs_CXRs.zip
+curl -o data.zip -k https://raw.githubusercontent.com/paras42/Hello_World_Deep_Learning/master/Open_I_abd_vs_CXRs.zip
+unzip data.zip
 ```
 Install required dependencies:
 ```
