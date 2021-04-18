@@ -21,7 +21,6 @@ settings = Dynaconf(
     settings_files=['settings.toml', '.secrets.toml'], # `settings_files` = Load this files in the order.
 )
 
-# TODO: use a configuration manager
 # dimensions of our images
 img_width = settings.img_width
 img_height = settings.img_height
