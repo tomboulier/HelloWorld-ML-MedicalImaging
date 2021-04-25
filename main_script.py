@@ -9,6 +9,17 @@ from keras.layers import Dropout, Flatten, Dense, GlobalAveragePooling2D
 from keras.models import Model
 from keras.optimizers import Adam
 
+# Compatibility for GPU computing
+# https://stackoverflow.com/questions/59340465/how-to-solve-no-algorithm-worked-keras-error
+import tensorflow as tf
+from tensorflow.compat.v1 import ConfigProto
+from tensorflow.compat.v1 import InteractiveSession
+
+config = ConfigProto()
+config.gpu_options.allow_growth = True
+session = InteractiveSession(config=config)
+
+
 ######################################################################
 # Global variables
 ######################################################################
