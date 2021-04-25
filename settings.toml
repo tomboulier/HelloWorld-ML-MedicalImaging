@@ -1,0 +1,14 @@
+# dimensions of our images
+img_width = 299
+img_height = 299
+
+# directory and image information
+train_data_dir = 'Open_I_abd_vs_CXRs/TRAIN'
+validation_data_dir = 'Open_I_abd_vs_CXRs/VAL'
+
+# epochs = number of passes of through training data
+# batch_size = number images processed at same time
+train_samples = 65
+validation_samples = 10
+epochs = 20
+batch_size = 5

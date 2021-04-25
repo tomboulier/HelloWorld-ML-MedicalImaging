@@ -9,23 +9,43 @@ from keras.layers import Dropout, Flatten, Dense, GlobalAveragePooling2D
 from keras.models import Model
 from keras.optimizers import Adam
 
+# Compatibility for GPU computing
+# https://stackoverflow.com/questions/59340465/how-to-solve-no-algorithm-worked-keras-error
+import tensorflow as tf
+from tensorflow.compat.v1 import ConfigProto
+from tensorflow.compat.v1 import InteractiveSession
+
+config = ConfigProto()
+config.gpu_options.allow_growth = True
+session = InteractiveSession(config=config)
+
+
 ######################################################################
 # Global variables
 ######################################################################
-# TODO: use a configuration manager
+
+
+from dynaconf import Dynaconf
+
+settings = Dynaconf(
+    envvar_prefix="DYNACONF", # `envvar_prefix` = export envvars with `export DYNACONF_FOO=bar`.
+    settings_files=['settings.toml', '.secrets.toml'], # `settings_files` = Load this files in the order.
+)
+
 # dimensions of our images
-img_width, img_height = 299, 299
+img_width = settings.img_width
+img_height = settings.img_height
 
 # directory and image information
-train_data_dir = 'Open_I_abd_vs_CXRs/TRAIN'
-validation_data_dir = 'Open_I_abd_vs_CXRs/VAL'
+train_data_dir = settings.train_data_dir
+validation_data_dir = settings.validation_data_dir
 
 # epochs = number of passes of through training data
 # batch_size = number images processed at same time
-train_samples = 65
-validation_samples = 10
-epochs = 20
-batch_size = 5
+train_samples = settings.train_samples
+validation_samples = settings.validation_samples
+epochs = settings.epochs
+batch_size = settings.batch_size
 
 ######################################################################
 # Build the model
