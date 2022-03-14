@@ -1,14 +1,14 @@
 # Code from the following article:
 # https://link.springer.com/article/10.1007/s10278-018-0079-6
 
+from data import DataSet
+from dynaconf import Dynaconf
 from keras import applications
 from keras.preprocessing.image import ImageDataGenerator
-from keras import optimizers
 from keras.models import Sequential
 from keras.layers import Dropout, Flatten, Dense, GlobalAveragePooling2D
 from keras.models import Model
 from keras.optimizers import Adam
-
 # Compatibility for GPU computing
 # https://stackoverflow.com/questions/59340465/how-to-solve-no-algorithm-worked-keras-error
 import tensorflow as tf
@@ -19,17 +19,13 @@ config = ConfigProto()
 config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
-
 ######################################################################
 # Global variables
 ######################################################################
 
-
-from dynaconf import Dynaconf
-
 settings = Dynaconf(
-    envvar_prefix="DYNACONF", # `envvar_prefix` = export envvars with `export DYNACONF_FOO=bar`.
-    settings_files=['settings.toml', '.secrets.toml'], # `settings_files` = Load this files in the order.
+    envvar_prefix="DYNACONF",  # `envvar_prefix` = export envvars with `export DYNACONF_FOO=bar`.
+    settings_files=['settings.toml', '.secrets.toml'],  # `settings_files` = Load this files in the order.
 )
 
 # dimensions of our images
@@ -62,31 +58,33 @@ base_model = applications.InceptionV3(weights='imagenet',
 # Then apply dropout and sigmoid activation
 model_top = Sequential()
 model_top.add(GlobalAveragePooling2D(input_shape=base_model.output_shape[1:],
-data_format=None)),
+                                     data_format=None)),
 model_top.add(Dense(256, activation='relu'))
 model_top.add(Dropout(0.5))
 model_top.add(Dense(1, activation='sigmoid'))
 model = Model(inputs=base_model.input, outputs=model_top(base_model.output))
 # Compile model using Adam optimizer with common values and binary cross entropy loss
 # Use low learning rate (lr) for transfer learning
-model.compile(optimizer=Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=1e08,decay=0.0),
+model.compile(optimizer=Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=1e08, decay=0.0),
               loss='binary_crossentropy',
               metrics=['accuracy'])
 
 ######################################################################
 # Image preprocessing and augmentation
 ######################################################################
+dataset = DataSet(settings)
+
 train_datagen = ImageDataGenerator(
-    rescale= 1./255, # Rescale pixel values to 0-1 to aid CNN processing
-    shear_range=0.2, # 0-1 range for shearing
-    zoom_range=0.2, # 0-1 range for zoom
-    rotation_range=20, # 0-180 range, degrees of rotation
-    width_shift_range=0.2, # 0-1 range horizontal translation
-    height_shift_range=0.2, # 0-1 range vertical translation
-    horizontal_flip=True) # set True or False
+    rescale=1. / 255,  # Rescale pixel values to 0-1 to aid CNN processing
+    shear_range=0.2,  # 0-1 range for shearing
+    zoom_range=0.2,  # 0-1 range for zoom
+    rotation_range=20,  # 0-180 range, degrees of rotation
+    width_shift_range=0.2,  # 0-1 range horizontal translation
+    height_shift_range=0.2,  # 0-1 range vertical translation
+    horizontal_flip=True)  # set True or False
 
 # Rescale pixel values to 0-1 to aid CNN processing
-val_datagen = ImageDataGenerator(rescale=1./255)
+val_datagen = ImageDataGenerator(rescale=1. / 255)
 
 # Defining the training and validation generator
 # Directory, image size, batch size already specified above
@@ -102,7 +100,6 @@ validation_generator = train_datagen.flow_from_directory(validation_data_dir,
                                                          batch_size=batch_size,
                                                          class_mode='binary')
 
-
 ######################################################################
 # Fitting the model
 ######################################################################
@@ -114,7 +111,6 @@ history = model.fit(train_generator,
                     epochs=epochs,
                     validation_data=validation_generator,
                     validation_steps=validation_samples // batch_size)
-
 
 ######################################################################
 # Plotting the model fitting convergence
@@ -132,7 +128,6 @@ plt.plot(history.history['val_loss'], 'green', label='Validation loss')
 plt.legend()
 plt.show()
 
-
 ######################################################################
 # Evaluating the model performance
 ######################################################################
@@ -142,8 +137,8 @@ import numpy as np
 from keras.preprocessing import image
 
 # load, resize, and display test images
-img_path='Open_I_abd_vs_CXRs/TEST/chest2.png'
-img_path2='Open_I_abd_vs_CXRs/TEST/abd2.png'
+img_path = 'Open_I_abd_vs_CXRs/TEST/chest2.png'
+img_path2 = 'Open_I_abd_vs_CXRs/TEST/abd2.png'
 img = image.load_img(img_path, target_size=(img_width, img_height))
 img2 = image.load_img(img_path2, target_size=(img_width, img_height))
 plt.imshow(img)
@@ -154,7 +149,7 @@ img = image.img_to_array(img)
 
 # expand array from 3 dimensions (height, width, channels) to 4 dimensions (batch size, height, width, channels)
 # rescale pixel values to 0-1
-x = np.expand_dims(img, axis=0) * 1./255
+x = np.expand_dims(img, axis=0) * 1. / 255
 
 # get prediction on test image
 score = model.predict(x)
@@ -164,7 +159,6 @@ print('Predicted:', score, 'Chest X-ray' if score < 0.5 else 'Abd X-ray')
 plt.imshow(img2)
 plt.show()
 img2 = image.img_to_array(img2)
-x = np.expand_dims(img2, axis=0) * 1./255
+x = np.expand_dims(img2, axis=0) * 1. / 255
 score2 = model.predict(x)
 print('Predicted:', score2, 'Chest X-ray' if score2 < 0.5 else 'Abd X-ray')
-

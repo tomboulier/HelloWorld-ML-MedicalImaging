@@ -20,10 +20,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-    - name: Get data from original repo
-      run: |
-        wget https://github.com/paras42/Hello_World_Deep_Learning/raw/master/Open_I_abd_vs_CXRs.zip
-        unzip Open_I_abd_vs_CXRs.zip
     - name: Run main script
       run: |
         python main_script.py

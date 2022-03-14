@@ -1,3 +1,6 @@
+# where to download dataset
+dataset_url = 'https://raw.githubusercontent.com/paras42/Hello_World_Deep_Learning/master/Open_I_abd_vs_CXRs.zip'
+
 # dimensions of our images
 img_width = 299
 img_height = 299

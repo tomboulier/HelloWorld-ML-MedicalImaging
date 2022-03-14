@@ -19,11 +19,6 @@ git clone https://github.com/tomboulier/HelloWorld-ML-MedicalImaging
 cd HelloWorld-ML-MedicalImaging
 ```
 
-Get data from the original repository:
-```
-curl -o data.zip -k https://raw.githubusercontent.com/paras42/Hello_World_Deep_Learning/master/Open_I_abd_vs_CXRs.zip
-unzip data.zip
-```
 Install required dependencies:
 ```
 pip install -r requirements.txt
