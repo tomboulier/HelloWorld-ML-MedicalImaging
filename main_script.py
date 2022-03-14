@@ -1,47 +1,21 @@
 # Code from the following article:
 # https://link.springer.com/article/10.1007/s10278-018-0079-6
 
-from data import DataSet
-from dynaconf import Dynaconf
+# external libraries
 from keras import applications
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
 from keras.layers import Dropout, Flatten, Dense, GlobalAveragePooling2D
 from keras.models import Model
 from keras.optimizers import Adam
-# Compatibility for GPU computing
-# https://stackoverflow.com/questions/59340465/how-to-solve-no-algorithm-worked-keras-error
-import tensorflow as tf
-from tensorflow.compat.v1 import ConfigProto
-from tensorflow.compat.v1 import InteractiveSession
+# internal modules
+from data import DataSet
+from settings import Settings
+from utils import enable_gpu_computing
 
-config = ConfigProto()
-config.gpu_options.allow_growth = True
-session = InteractiveSession(config=config)
-
-######################################################################
-# Global variables
-######################################################################
-
-settings = Dynaconf(
-    envvar_prefix="DYNACONF",  # `envvar_prefix` = export envvars with `export DYNACONF_FOO=bar`.
-    settings_files=['settings.toml', '.secrets.toml'],  # `settings_files` = Load this files in the order.
-)
-
-# dimensions of our images
-img_width = settings.img_width
-img_height = settings.img_height
-
-# directory and image information
-train_data_dir = settings.train_data_dir
-validation_data_dir = settings.validation_data_dir
-
-# epochs = number of passes of through training data
-# batch_size = number images processed at same time
-train_samples = settings.train_samples
-validation_samples = settings.validation_samples
-epochs = settings.epochs
-batch_size = settings.batch_size
+enable_gpu_computing()
+settings = Settings(settings_filepath='settings.toml')
+dataset = DataSet(settings)
 
 ######################################################################
 # Build the model
@@ -50,7 +24,7 @@ batch_size = settings.batch_size
 # build the Inception V3 network, use pretrained weights from ImageNet
 # remove top fully connected layers by include_top=False
 base_model = applications.InceptionV3(weights='imagenet',
-                                      include_top=False, input_shape=(img_width, img_height, 3))
+                                      include_top=False, input_shape=(settings.img_width, (settings.img_height), 3))
 
 # Add new layers on top of the model
 # build a classifier model to put on top of the convolutional model
@@ -72,7 +46,7 @@ model.compile(optimizer=Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=1e08, 
 ######################################################################
 # Image preprocessing and augmentation
 ######################################################################
-dataset = DataSet(settings)
+
 
 train_datagen = ImageDataGenerator(
     rescale=1. / 255,  # Rescale pixel values to 0-1 to aid CNN processing
@@ -87,17 +61,16 @@ train_datagen = ImageDataGenerator(
 val_datagen = ImageDataGenerator(rescale=1. / 255)
 
 # Defining the training and validation generator
-# Directory, image size, batch size already specified above
 # Class mode is set to 'binary' for a 2-class problem
 # Generator randomly shuffles and presents images in batches to the network
-train_generator = train_datagen.flow_from_directory(train_data_dir,
-                                                    target_size=(img_height, img_width),
-                                                    batch_size=batch_size,
+train_generator = train_datagen.flow_from_directory(dataset.train_directory_path,
+                                                    target_size=(settings.img_height, settings.img_width),
+                                                    batch_size=settings.batch_size,
                                                     class_mode='binary')
 
-validation_generator = train_datagen.flow_from_directory(validation_data_dir,
-                                                         target_size=(img_height, img_width),
-                                                         batch_size=batch_size,
+validation_generator = train_datagen.flow_from_directory(dataset.validation_directory_path,
+                                                         target_size=(settings.img_height, settings.img_width),
+                                                         batch_size=settings.batch_size,
                                                          class_mode='binary')
 
 ######################################################################
@@ -107,10 +80,10 @@ validation_generator = train_datagen.flow_from_directory(validation_data_dir,
 # Fine-tune the pretrained Inception V3 model using the data generator
 # Specify steps per epoch (number of samples/batch_size)
 history = model.fit(train_generator,
-                    steps_per_epoch=train_samples // batch_size,
-                    epochs=epochs,
+                    steps_per_epoch=dataset.train_samples_number // settings.batch_size,
+                    epochs=(settings.epochs),
                     validation_data=validation_generator,
-                    validation_steps=validation_samples // batch_size)
+                    validation_steps=dataset.validation_samples_number // settings.batch_size)
 
 ######################################################################
 # Plotting the model fitting convergence
@@ -139,8 +112,8 @@ from keras.preprocessing import image
 # load, resize, and display test images
 img_path = 'Open_I_abd_vs_CXRs/TEST/chest2.png'
 img_path2 = 'Open_I_abd_vs_CXRs/TEST/abd2.png'
-img = image.load_img(img_path, target_size=(img_width, img_height))
-img2 = image.load_img(img_path2, target_size=(img_width, img_height))
+img = image.load_img(img_path, target_size=((settings.img_width), (settings.img_height)))
+img2 = image.load_img(img_path2, target_size=((settings.img_width), (settings.img_height)))
 plt.imshow(img)
 plt.show()
 

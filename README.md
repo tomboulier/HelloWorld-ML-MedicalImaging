@@ -13,15 +13,14 @@ I want to start from this state of code and makes it "more MLOps", *i.e.*
 
 # Installation and usage
 
-Clone the repository:
-```
-git clone https://github.com/tomboulier/HelloWorld-ML-MedicalImaging
-cd HelloWorld-ML-MedicalImaging
-```
-
 Install required dependencies:
 ```
 pip install -r requirements.txt
+```
+
+Run the tests:
+```
+pytest tests.py
 ```
 
 Run the main script:
