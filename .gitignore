@@ -6,3 +6,4 @@ venv/*
 Open_I_abd_vs_CXRs/*
 # PyCharm settings
 .idea/*
+__pycache__/*
