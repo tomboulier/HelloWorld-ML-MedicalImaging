@@ -1,14 +1,12 @@
 # Code from the following article:
 # https://link.springer.com/article/10.1007/s10278-018-0079-6
 
-# external libraries
-from keras import applications
-from keras.preprocessing.image import ImageDataGenerator
-from keras.models import Sequential
-from keras.layers import Dropout, Flatten, Dense, GlobalAveragePooling2D
-from keras.models import Model
-from keras.optimizers import Adam
-# internal modules
+from tensorflow.keras import applications
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dropout, Flatten, Dense, GlobalAveragePooling2D
+from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import Adam
 from data import DataSet
 from settings import Settings
 from utils import enable_gpu_computing
