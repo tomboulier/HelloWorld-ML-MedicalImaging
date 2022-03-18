@@ -11,8 +11,10 @@ settings = Settings(settings_filepath='settings.toml')
 
 dataset = DataSet(settings)
 
+
 model = Model(settings)
 history = model.train(dataset, settings)
+
 
 ######################################################################
 # Plotting the model fitting convergence

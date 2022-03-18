@@ -53,10 +53,6 @@ class DataSet:
         return self.image_generator.flow_from_directory(self.validation_directory_path)
 
 
-######################################################################
-# Image preprocessing and augmentation
-######################################################################
-
 class ImageGenerator(ImageDataGenerator):
     """
     A data generator aims at having a bigger dataset without having
@@ -68,7 +64,6 @@ class ImageGenerator(ImageDataGenerator):
 
     TODO: use this article to get our architecture cleaner?
     """
-
     def __init__(self, settings):
         super().__init__(
             rescale=settings.rescale,
@@ -89,3 +84,4 @@ class ImageGenerator(ImageDataGenerator):
                                         target_size=(self.img_height, self.img_width),
                                         batch_size=self.batch_size,
                                         class_mode='binary')
+        self.batch_size = settings.batch_size
