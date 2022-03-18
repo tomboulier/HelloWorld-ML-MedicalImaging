@@ -84,4 +84,3 @@ class ImageGenerator(ImageDataGenerator):
                                         target_size=(self.img_height, self.img_width),
                                         batch_size=self.batch_size,
                                         class_mode='binary')
-        self.batch_size = settings.batch_size
