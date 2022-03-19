@@ -3,6 +3,9 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dropout, Flatten, Dense, GlobalAveragePooling2D
 from tensorflow.keras.models import Model as KerasModel
 from tensorflow.keras.optimizers import Adam
+from utils import enable_gpu_computing
+
+enable_gpu_computing()
 
 
 class Model:

@@ -3,10 +3,9 @@
 
 from data import DataSet
 from settings import Settings
-from utils import enable_gpu_computing
 from model import Model
 
-enable_gpu_computing()
+
 settings = Settings(settings_filepath='settings.toml')
 
 dataset = DataSet(settings)

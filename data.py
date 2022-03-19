@@ -46,11 +46,11 @@ class DataSet:
 
     @property
     def train_generator(self):
-        return self.image_generator.flow_from_directory(self.train_directory_path)
+        return self.image_generator.build_from_directory(self.train_directory_path)
 
     @property
     def validation_generator(self):
-        return self.image_generator.flow_from_directory(self.validation_directory_path)
+        return self.image_generator.build_from_directory(self.validation_directory_path)
 
 
 class ImageGenerator(ImageDataGenerator):
