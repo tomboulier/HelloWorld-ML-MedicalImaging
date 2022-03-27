@@ -16,6 +16,11 @@ class Model:
         self.img_width = settings.img_width
         self.img_height = settings.img_height
         self._model = None
+        self.learning_rate = settings.learning_rate
+        self.beta_1 = settings.beta_1
+        self.beta_2 = settings.beta_2
+        self.epsilon = settings.epsilon
+        self.decay = settings.decay
         self.build()
 
     def build(self):
@@ -23,7 +28,7 @@ class Model:
         # remove top fully connected layers by include_top=False
         base_model = applications.InceptionV3(weights='imagenet',
                                               include_top=False,
-                                              input_shape=(self.img_width, (self.img_height), 3))
+                                              input_shape=(self.img_width, self.img_height, 3))
 
         # Add new layers on top of the model
         # build a classifier model to put on top of the convolutional model
@@ -36,9 +41,14 @@ class Model:
         model_top.add(Dropout(0.5))
         model_top.add(Dense(1, activation='sigmoid'))
         model = KerasModel(inputs=base_model.input, outputs=model_top(base_model.output))
+
         # Compile model using Adam optimizer with common values and binary cross entropy loss
         # Use low learning rate (lr) for transfer learning
-        model.compile(optimizer=Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=1e08, decay=0.0),
+        model.compile(optimizer=Adam(lr=self.learning_rate,
+                                     beta_1=self.beta_1,
+                                     beta_2=self.beta_2,
+                                     epsilon=self.epsilon,
+                                     decay=self.decay),
                       loss='binary_crossentropy',
                       metrics=['accuracy'])
 
