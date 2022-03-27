@@ -17,10 +17,17 @@ epochs = 20 # number of passes of through training data
 batch_size = 5 # number images processed at same time
 
 # data augmentation
-rescale=0.003921568627 # = 1/255 (Rescale pixel values to 0-1 to aid CNN processing)
-shear_range=0.2  # 0-1 range for shearing
-zoom_range=0.2  # 0-1 range for zoom
-rotation_range=20  # 0-180 range, degrees of rotation
-width_shift_range=0.2  # 0-1 range horizontal translation
-height_shift_range=0.2  # 0-1 range vertical translation
+rescale = 0.003921568627 # = 1/255 (Rescale pixel values to 0-1 to aid CNN processing)
+shear_range = 0.2  # 0-1 range for shearing
+zoom_range = 0.2  # 0-1 range for zoom
+rotation_range = 20  # 0-180 range, degrees of rotation
+width_shift_range = 0.2  # 0-1 range horizontal translation
+height_shift_range = 0.2  # 0-1 range vertical translation
 horizontal_flip = true  # set True or False)
+
+# model's Adam optimizer parameters
+learning_rate = 0.0001
+beta_1 = 0.9
+beta_2 = 0.999
+epsilon = 0.00000001
+decay = 0.0

@@ -4,6 +4,9 @@ from tensorflow.keras.layers import Dropout, Flatten, Dense, GlobalAveragePoolin
 from tensorflow.keras.models import Model as KerasModel
 from tensorflow.keras.optimizers import Adam
 from utils import enable_gpu_computing
+import matplotlib.pyplot as plt
+import numpy as np
+from keras.preprocessing import image as keras_image
 
 enable_gpu_computing()
 
@@ -13,6 +16,11 @@ class Model:
         self.img_width = settings.img_width
         self.img_height = settings.img_height
         self._model = None
+        self.learning_rate = settings.learning_rate
+        self.beta_1 = settings.beta_1
+        self.beta_2 = settings.beta_2
+        self.epsilon = settings.epsilon
+        self.decay = settings.decay
         self.build()
 
     def build(self):
@@ -20,7 +28,7 @@ class Model:
         # remove top fully connected layers by include_top=False
         base_model = applications.InceptionV3(weights='imagenet',
                                               include_top=False,
-                                              input_shape=(self.img_width, (self.img_height), 3))
+                                              input_shape=(self.img_width, self.img_height, 3))
 
         # Add new layers on top of the model
         # build a classifier model to put on top of the convolutional model
@@ -33,20 +41,77 @@ class Model:
         model_top.add(Dropout(0.5))
         model_top.add(Dense(1, activation='sigmoid'))
         model = KerasModel(inputs=base_model.input, outputs=model_top(base_model.output))
+
         # Compile model using Adam optimizer with common values and binary cross entropy loss
         # Use low learning rate (lr) for transfer learning
-        model.compile(optimizer=Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=1e08, decay=0.0),
+        model.compile(optimizer=Adam(lr=self.learning_rate,
+                                     beta_1=self.beta_1,
+                                     beta_2=self.beta_2,
+                                     epsilon=self.epsilon,
+                                     decay=self.decay),
                       loss='binary_crossentropy',
                       metrics=['accuracy'])
 
         self._model = model
 
     def train(self, dataset, settings):
-        return self._model.fit(dataset.train_generator,
-                               steps_per_epoch=dataset.train_samples_number // settings.batch_size,
-                               epochs=settings.epochs,
-                               validation_data=dataset.validation_generator,
-                               validation_steps=dataset.validation_samples_number // settings.batch_size)
+        history = self._model.fit(dataset.train_generator,
+                                  steps_per_epoch=dataset.train_samples_number // settings.batch_size,
+                                  epochs=settings.epochs,
+                                  validation_data=dataset.validation_generator,
+                                  validation_steps=dataset.validation_samples_number // settings.batch_size)
 
-    def predict(self, image):
-        return self._model.predict(image)
+        return History(history)
+
+    def predict(self, image_path: str):
+        """Classification of the image given by its path, `image_path`"""
+        image = keras_image.load_img(image_path, target_size=(self.img_width, self.img_height))
+        array = keras_image.img_to_array(image)  # convert image to numpy array, so Keras can render a prediction
+        prediction = Prediction(image)
+        # expand array from 3 dimensions (height, width, channels) to 4 dimensions (batch size, height, width, channels)
+        # rescale pixel values to 0-1
+        x = np.expand_dims(array, axis=0) * 1. / 255
+        # get prediction on test image
+        prediction.score = self._model.predict(x)
+
+        return prediction
+
+
+class Prediction:
+    def __init__(self, image):
+        self.image = image
+        self.score = -1
+
+    def plot(self):
+        """Plots the image with the predicted score in the title"""
+        plt.figure()
+        plt.imshow(self.image)
+        plt.title(f'Predicted: {self.to_string()}')
+        plt.show()
+        
+    def to_string(self):
+        if self.score < 0.5:
+            return 'Chest X-ray'
+        else:
+            return 'Abd X-ray'
+
+
+class History:
+    """A wrapper for the History class of TensorFlow"""
+
+    def __init__(self, history):
+        self._history = history
+
+    @property
+    def epoch(self):
+        return self._history.epoch
+
+    def plot(self):
+        """Plots how the training process occured, with accuracy and loss for test and validation sets."""
+        plt.figure()
+        plt.plot(self._history.history['accuracy'], 'orange', label='Training accuracy')
+        plt.plot(self._history.history['val_accuracy'], 'blue', label='Validation accuracy')
+        plt.plot(self._history.history['loss'], 'red', label='Training loss')
+        plt.plot(self._history.history['val_loss'], 'green', label='Validation loss')
+        plt.legend()
+        plt.show()
