@@ -4,6 +4,7 @@ from tensorflow.keras.layers import Dropout, Flatten, Dense, GlobalAveragePoolin
 from tensorflow.keras.models import Model as KerasModel
 from tensorflow.keras.optimizers import Adam
 from utils import enable_gpu_computing
+import matplotlib.pyplot as plt
 
 enable_gpu_computing()
 
@@ -42,11 +43,30 @@ class Model:
         self._model = model
 
     def train(self, dataset, settings):
-        return self._model.fit(dataset.train_generator,
-                               steps_per_epoch=dataset.train_samples_number // settings.batch_size,
-                               epochs=settings.epochs,
-                               validation_data=dataset.validation_generator,
-                               validation_steps=dataset.validation_samples_number // settings.batch_size)
+        history = self._model.fit(dataset.train_generator,
+                                  steps_per_epoch=dataset.train_samples_number // settings.batch_size,
+                                  epochs=settings.epochs,
+                                  validation_data=dataset.validation_generator,
+                                  validation_steps=dataset.validation_samples_number // settings.batch_size)
+
+        return History(history)
 
     def predict(self, image):
         return self._model.predict(image)
+
+
+class History:
+    """A wrapper for the History class of TensorFlow"""
+
+    def __init__(self, history):
+        self._history = history
+
+    def plot(self):
+        """Plots how the training process occured, with accuracy and loss for test and validation sets."""
+        plt.figure()
+        plt.plot(self._history.history['accuracy'], 'orange', label='Training accuracy')
+        plt.plot(self._history.history['val_accuracy'], 'blue', label='Validation accuracy')
+        plt.plot(self._history.history['loss'], 'red', label='Training loss')
+        plt.plot(self._history.history['val_loss'], 'green', label='Validation loss')
+        plt.legend()
+        plt.show()

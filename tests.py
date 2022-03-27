@@ -8,8 +8,7 @@ expected_url = 'https://raw.githubusercontent.com/paras42/Hello_World_Deep_Learn
 dataset = DataSet(test_settings)
 
 
-
-def test_if_Settings_class_works():
+def test_if_settings_class_works():
     assert test_settings.dataset_url == expected_url
     assert test_settings.rescale == approx(1. / 255)
     assert test_settings.horizontal_flip
@@ -22,6 +21,7 @@ def test_if_dataset_has_same_url_as_in_settings():
 def test_train_and_validation_samples_number_properties():
     assert dataset.train_samples_number == 65
     assert dataset.validation_samples_number == 10
+
 
 def test_if_training_is_complete():
     """
