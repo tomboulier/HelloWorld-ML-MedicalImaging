@@ -102,6 +102,10 @@ class History:
     def __init__(self, history):
         self._history = history
 
+    @property
+    def epoch(self):
+        return self._history.epoch
+
     def plot(self):
         """Plots how the training process occured, with accuracy and loss for test and validation sets."""
         plt.figure()

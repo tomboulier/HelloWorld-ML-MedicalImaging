@@ -21,3 +21,10 @@ rotation_range=20  # 0-180 range, degrees of rotation
 width_shift_range=0.2  # 0-1 range horizontal translation
 height_shift_range=0.2  # 0-1 range vertical translation
 horizontal_flip = true  # set True or False)
+
+# model's Adam optimizer parameters
+learning_rate = 0.0001
+beta_1 = 0.9
+beta_2 = 0.999
+epsilon = 0.00000001
+decay = 0.0
