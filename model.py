@@ -5,6 +5,8 @@ from tensorflow.keras.models import Model as KerasModel
 from tensorflow.keras.optimizers import Adam
 from utils import enable_gpu_computing
 import matplotlib.pyplot as plt
+import numpy as np
+from keras.preprocessing import image as keras_image
 
 enable_gpu_computing()
 
@@ -51,8 +53,37 @@ class Model:
 
         return History(history)
 
-    def predict(self, image):
-        return self._model.predict(image)
+    def predict(self, image_path: str):
+        """Classification of the image given by its path, `image_path`"""
+        image = keras_image.load_img(image_path, target_size=(self.img_width, self.img_height))
+        array = keras_image.img_to_array(image)  # convert image to numpy array, so Keras can render a prediction
+        prediction = Prediction(image)
+        # expand array from 3 dimensions (height, width, channels) to 4 dimensions (batch size, height, width, channels)
+        # rescale pixel values to 0-1
+        x = np.expand_dims(array, axis=0) * 1. / 255
+        # get prediction on test image
+        prediction.score = self._model.predict(x)
+
+        return prediction
+
+
+class Prediction:
+    def __init__(self, image):
+        self.image = image
+        self.score = -1
+
+    def plot(self):
+        """Plots the image with the predicted score in the title"""
+        plt.figure()
+        plt.imshow(self.image)
+        plt.title(f'Predicted: {self.to_string()}')
+        plt.show()
+        
+    def to_string(self):
+        if self.score < 0.5:
+            return 'Chest X-ray'
+        else:
+            return 'Abd X-ray'
 
 
 class History:
