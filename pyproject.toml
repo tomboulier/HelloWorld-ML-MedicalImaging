@@ -10,7 +10,7 @@ build-backend = "hatchling.build"
 name = "hello-world-medical-imaging"
 # The version is managed by python-semantic-release from the commit history
 # (see "release" in docs/automation.md). Do not edit it by hand.
-version = "0.0.0"
+version = "0.1.0"
 description = "From notebook to bedside: the 'Hello World Deep Learning in Medical Imaging' tutorial as reproducible, tested, documented code."
 readme = "README.md"
 requires-python = ">=3.12"
