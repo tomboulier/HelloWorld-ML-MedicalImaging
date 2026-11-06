@@ -1,0 +1,24 @@
+# Experiment configuration. Every value has a default in
+# src/hello_world_medical_imaging/config.py; this file overrides them.
+
+# Where the images come from and where they are stored (not under version control).
+dataset_url = "https://raw.githubusercontent.com/paras42/Hello_World_Deep_Learning/master/Open_I_abd_vs_CXRs.zip"
+dataset_directory = "data/Open_I_abd_vs_CXRs"
+output_directory = "outputs"
+
+# Images are resized to image_size x image_size pixels (Inception V3 expects 299).
+image_size = 299
+batch_size = 5
+epochs = 20
+learning_rate = 0.0001
+
+# Seed of every random number generator (Python, NumPy, TensorFlow).
+seed = 42
+
+# Random transformations of the training images, as in the original notebook.
+[augmentation]
+rotation_degrees = 20.0
+zoom_range = 0.2
+shift_range = 0.2
+shear_range = 0.2
+horizontal_flip = true
