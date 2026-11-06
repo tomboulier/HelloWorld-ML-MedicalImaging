@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import logging
 import sys
+from importlib.metadata import version
 from pathlib import Path
 
 import keras
@@ -38,6 +39,9 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="hello-world-medical-imaging",
         description="Train a chest-versus-abdomen radiograph classifier.",
+    )
+    parser.add_argument(
+        "--version", action="version", version=version("hello-world-medical-imaging")
     )
     parser.add_argument(
         "--config",
