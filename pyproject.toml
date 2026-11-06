@@ -1,0 +1,109 @@
+# Project metadata, dependencies and tool configuration (PEP 621).
+# Direct dependencies are pinned to exact versions; transitive dependencies are
+# pinned in uv.lock. See docs/usage.md for how to install and run.
+
+[build-system]
+requires = ["hatchling==1.28.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hello-world-medical-imaging"
+# The version is managed by python-semantic-release from the commit history
+# (see "release" in docs/automation.md). Do not edit it by hand.
+version = "0.1.0"
+description = "From notebook to bedside: the 'Hello World Deep Learning in Medical Imaging' tutorial as reproducible, tested, documented code."
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [{ name = "Thomas Boulier" }]
+dependencies = [
+    "tensorflow==2.21.0",
+    "numpy==2.5.4",
+    "pillow==13.0.0",
+    "matplotlib==3.11.2",
+]
+
+[project.scripts]
+hello-world-medical-imaging = "hello_world_medical_imaging.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest==9.2.0",
+    "ruff==0.17.4",
+    "mypy==2.4.1",
+]
+docs = [
+    "mkdocs==1.6.1",
+    "mkdocs-material==9.8.0",
+]
+release = [
+    "python-semantic-release==10.7.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hello_world_medical_imaging"]
+
+# ---------------------------------------------------------------------------
+# Tests: pytest also runs the doctests embedded in the docstrings.
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests", "src"]
+addopts = "--doctest-modules"
+
+# ---------------------------------------------------------------------------
+# Linting and formatting with Ruff.
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+exclude = ["notebooks"]  # the original notebook is kept as it was
+
+[tool.ruff.lint]
+select = [
+    "E", "W",  # pycodestyle
+    "F",       # pyflakes
+    "I",       # isort
+    "B",       # bugbear
+    "UP",      # pyupgrade
+    "D",       # pydocstyle (docstrings, PEP 257)
+    "N",       # pep8-naming
+    "SIM",     # simplify
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D"]  # test names are the documentation
+
+# ---------------------------------------------------------------------------
+# Static typing with mypy. TensorFlow ships no type stubs, so its imports are
+# ignored; our own code is checked strictly.
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "tests"]
+
+[[tool.mypy.overrides]]
+module = ["tensorflow.*", "keras.*", "matplotlib.*"]
+ignore_missing_imports = true
+
+# ---------------------------------------------------------------------------
+# Versioning and changelog from Conventional Commits.
+# ---------------------------------------------------------------------------
+[tool.semantic_release]
+version_toml = ["pyproject.toml:project.version"]
+commit_parser = "conventional"
+allow_zero_version = true
+major_on_zero = false
+tag_format = "v{version}"
+
+[tool.semantic_release.changelog]
+mode = "update"
+insertion_flag = "<!-- version list -->"
+default_templates = { changelog_file = "CHANGELOG.md" }
+
+[tool.semantic_release.branches.main]
+match = "main"
+prerelease = false

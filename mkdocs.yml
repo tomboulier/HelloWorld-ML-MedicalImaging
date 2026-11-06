@@ -1,0 +1,26 @@
+site_name: From notebook to bedside
+site_description: The "Hello World Deep Learning in Medical Imaging" tutorial, taken step by step towards reproducible and maintainable code.
+site_url: https://tomboulier.github.io/HelloWorld-ML-MedicalImaging/
+repo_url: https://github.com/tomboulier/HelloWorld-ML-MedicalImaging
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - content.code.copy
+
+nav:
+  - Roadmap: index.md
+  - Usage: usage.md
+  - Testing: testing.md
+  - Automation and releases: automation.md
+  - Architecture decisions:
+      - adr/index.md
+      - adr/0001-inject-the-data-source-into-training.md
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - pymdownx.superfences

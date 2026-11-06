@@ -1,0 +1,36 @@
+# Continuous integration: lint, type-check and test on every push and pull
+# request, then build the container image and run the tests inside it.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          version: "0.11.32"
+          enable-cache: true
+      - name: Install the locked dependencies
+        run: uv sync --frozen
+      - name: Lint and check formatting (Ruff)
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+      - name: Type-check (mypy)
+        run: uv run mypy
+      - name: Unit tests, integration test and doctests (pytest)
+        run: uv run pytest
+
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Build the image
+        run: docker build --tag hello-world-medical-imaging .
+      - name: Run the tests inside the image
+        run: docker run --rm hello-world-medical-imaging pytest
